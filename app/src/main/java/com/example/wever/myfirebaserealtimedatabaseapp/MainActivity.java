@@ -22,7 +22,6 @@ public class MainActivity extends AppCompatActivity {
             super.onCreate(savedInstanceState);
             setContentView(R.layout.classifieds_layout);
 
-
             Toolbar tb = findViewById(R.id.toolbar);
             setSupportActionBar(tb);
             tb.setSubtitle("Realtime Database");
@@ -34,16 +33,25 @@ public class MainActivity extends AppCompatActivity {
         public boolean onCreateOptionsMenu(Menu menu) {
             MenuInflater inflater = getMenuInflater();
             inflater.inflate(R.menu.ads_menu, menu);
+            MenuInflater inflater1 = getMenuInflater();
+            inflater1.inflate(R.menu.add_type_menu,menu);
             return true;
         }
+
         @Override
         public boolean onOptionsItemSelected(MenuItem item) {
             switch (item.getItemId()) {
-                case R.id.add_ad_m:
+                case R.id.add_cinema_m:
                     addClassifiedAdFrgmt();
                     return true;
-                case R.id.view_ads_m:
+                case R.id.add_movie_m:
+                    addMovieFrgmt();
+                    return true;
+                case R.id.view_cinema_m:
                     viewClassifiedAdFrgmt();
+                    return true;
+                case R.id.view_movies_m:
+                    viewMoviesAdFrgmt();
                     return true;
                 default:
                     return super.onOptionsItemSelected(item);
@@ -52,11 +60,23 @@ public class MainActivity extends AppCompatActivity {
         public void addClassifiedAdFrgmt(){
             FragmentTransaction ft = fm.beginTransaction();
             ft.replace(R.id.adds_frame, new AddClassifiedFragment());
+
             ft.commit();
         }
+    public void addMovieFrgmt(){
+        FragmentTransaction ft = fm.beginTransaction();
+        ft.replace(R.id.adds_frame, new AddMovieFragment());
+
+        ft.commit();
+    }
         public void viewClassifiedAdFrgmt(){
             FragmentTransaction ft = fm.beginTransaction();
             ft.replace(R.id.adds_frame, new ViewClassifiedFragment());
             ft.commit();
         }
+    public void viewMoviesAdFrgmt(){
+        FragmentTransaction ft = fm.beginTransaction();
+        ft.replace(R.id.adds_frame, new ViewMoviesFragment());
+        ft.commit();
+    }
 }

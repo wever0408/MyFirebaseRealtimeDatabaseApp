@@ -24,10 +24,8 @@ import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 
-//import android.support.v4.app.Fragment;
-
-public class AddClassifiedFragment extends Fragment {
-    private static final String TAG = "AddCinemaFragment";
+public class AddMovieFragment extends Fragment {
+    private static final String TAG = "AddMovieFragment";
 
     private DatabaseReference dbRef;
     private int nextClassifiedID;
@@ -40,10 +38,10 @@ public class AddClassifiedFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.ad_add_layout,
+        View view = inflater.inflate(R.layout.movie_add_layout,
                 container, false);
 
-        button = (Button) view.findViewById(R.id.post_add);
+        button = (Button) view.findViewById(R.id.movie_add);
         headTxt = view.findViewById(R.id.add_head_tv);
 
         dbRef = FirebaseDatabase.getInstance().getReference();
@@ -77,18 +75,18 @@ public class AddClassifiedFragment extends Fragment {
     }
 
     public void addEvent() {
-        ClassifiedAd classifiedAd = createClassifiedAdObj();
-        addClassifiedToDB(classifiedAd);
+        Movie movie = createClassifiedAdObj();
+        addClassifiedToDB(movie);
     }
 
     public void updateEvent() {
-        ClassifiedAd classifiedAd = createClassifiedAdObj();
-        updateClassifiedToDB(classifiedAd);
+        Movie movie = createClassifiedAdObj();
+        updateClassifiedToDB(movie);
     }
 
-    private void addClassifiedToDB(final ClassifiedAd classifiedAd) {
+    private void addClassifiedToDB(final Movie movie) {
         final DatabaseReference idDatabaseRef = FirebaseDatabase.getInstance()
-                .getReference("ClassifiedIDs").child("cinemaID");
+                .getReference("ClassifiedIDs").child("movieID");
 
         idDatabaseRef.runTransaction(new Transaction.Handler() {
             @Override
@@ -102,7 +100,7 @@ public class AddClassifiedFragment extends Fragment {
                             //set initial value
                             if(dataSnapshot != null && dataSnapshot.getValue() == null){
                                 idDatabaseRef.setValue(1);
-                                Log.d(TAG, "Initial cinemaID is set");
+                                Log.d(TAG, "Initial id is set");
                             }
                         }
                         @Override
@@ -111,7 +109,7 @@ public class AddClassifiedFragment extends Fragment {
                         }
                     });
 
-                    Log.d(TAG, "Classified cinemaID null so " +
+                    Log.d(TAG, "Classified id null so " +
                             " transaction aborted, " );
 
                     return Transaction.abort();
@@ -127,11 +125,11 @@ public class AddClassifiedFragment extends Fragment {
                                    DataSnapshot dataSnapshot) {
                 if (state) {
                     Log.d(TAG, "Classified id retrieved ");
-                    addClassified(classifiedAd, ""+nextClassifiedID);
+                    addClassified(movie, ""+nextClassifiedID);
                 } else {
                     Log.d(TAG, "Classified id retrieval unsuccessful " + databaseError);
                     Toast.makeText(getActivity(),
-                            "There is a problem, please submit ad post again",
+                            "There is a problem, please submit movie post again",
                             Toast.LENGTH_SHORT).show();
                 }
 
@@ -140,10 +138,10 @@ public class AddClassifiedFragment extends Fragment {
     }
 
     //Screen after adding or editing
-    private void addClassified(ClassifiedAd classifiedAd, String cAdId) {
-        classifiedAd.setAdId(cAdId);
-        dbRef.child("Cinema").child(cAdId)
-                .setValue(classifiedAd)
+    private void addClassified(Movie movie, String cAdId) {
+        movie.setAdId(cAdId);
+        dbRef.child("Movies").child(cAdId)
+                .setValue(movie)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
@@ -167,21 +165,21 @@ public class AddClassifiedFragment extends Fragment {
                 });
     }
     private void populateUpdateAd() {
-        headTxt.setText("Edit Ad");
-        button.setText("Edit Ad");
+        headTxt.setText("Edit Movie");
+        button.setText("Edit Movie");
         isEdit = true;
 
-        dbRef.child("Cinema").child(adId).
+        dbRef.child("Movies").child(adId).
                 addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        ClassifiedAd cAd = dataSnapshot.getValue(ClassifiedAd.class);
-                        displayAdForUpdate(cAd);
+                        Movie movie = dataSnapshot.getValue(Movie.class);
+                        displayAdForUpdate(movie);
                     }
 
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
-                        Log.d(TAG, "Error trying to get classified cinema for update " +
+                        Log.d(TAG, "Error trying to get classified movie for update " +
                                 ""+databaseError);
                         Toast.makeText(getActivity(),
                                 "Please try classified edit action again",
@@ -190,54 +188,54 @@ public class AddClassifiedFragment extends Fragment {
                 });
 
     }
-    private void displayAdForUpdate(ClassifiedAd cAd){// getActivity().findViewById
+    private void displayAdForUpdate(Movie movie){// getActivity().findViewById
         ((EditText) getActivity()
-                .findViewById(R.id.title_a)).setText(cAd.getTitle());
+                .findViewById(R.id.title_a)).setText(movie.getTitle());
         ((EditText) getActivity()
-                .findViewById(R.id.category_a)).setText(cAd.getCategory());
+                .findViewById(R.id.genre_a)).setText(movie.getGenre());
         ((EditText) getActivity()
-                .findViewById(R.id.desc_a)).setText(cAd.getDescription());
+                .findViewById(R.id.desc_a)).setText(movie.getDescription());
         ((EditText) getActivity()
-                .findViewById(R.id.name_a)).setText(cAd.getName());
+                .findViewById(R.id.director_a)).setText(movie.getDirector());
         ((EditText) getActivity()
-                .findViewById(R.id.phone_a)).setText(cAd.getPhone());
+                .findViewById(R.id.cast_a)).setText(movie.getCast());
         ((EditText) getActivity()
-                .findViewById(R.id.city_a)).setText(cAd.getCity());
+                .findViewById(R.id.openingDay_a)).setText(movie.getOpeningDay());
     }
-    private void updateClassifiedToDB(ClassifiedAd classifiedAd) {
-        addClassified(classifiedAd, adId);
+    private void updateClassifiedToDB(Movie movie) {
+        addClassified(movie, adId);
     }
 
-    private ClassifiedAd createClassifiedAdObj() {
-        final ClassifiedAd ad = new ClassifiedAd();
-        ad.setTitle(((EditText) getActivity()
+    private Movie createClassifiedAdObj() {
+        final Movie movie = new Movie();
+        movie.setTitle(((EditText) getActivity()
                 .findViewById(R.id.title_a)).getText().toString());
-        ad.setCategory(((EditText) getActivity()
-                .findViewById(R.id.category_a)).getText().toString());
-        ad.setDescription(((EditText) getActivity()
+        movie.setGenre(((EditText) getActivity()
+                .findViewById(R.id.genre_a)).getText().toString());
+        movie.setDescription(((EditText) getActivity()
                 .findViewById(R.id.desc_a)).getText().toString());
-        ad.setName(((EditText) getActivity()
-                .findViewById(R.id.name_a)).getText().toString());
-        ad.setPhone(((EditText) getActivity()
-                .findViewById(R.id.phone_a)).getText().toString());
-        ad.setCity(((EditText) getActivity()
-                .findViewById(R.id.city_a)).getText().toString());
-        return ad;
+        movie.setDirector(((EditText) getActivity()
+                .findViewById(R.id.director_a)).getText().toString());
+        movie.setCast(((EditText) getActivity()
+                .findViewById(R.id.cast_a)).getText().toString());
+        movie.setOpeningDay(((EditText) getActivity()
+                .findViewById(R.id.openingDay_a)).getText().toString());
+        return movie;
     }
 
     private void restUi() {
         ((EditText) getActivity()
                 .findViewById(R.id.title_a)).setText("");
         ((EditText) getActivity()
-                .findViewById(R.id.category_a)).setText("");
+                .findViewById(R.id.genre_a)).setText("");
         ((EditText) getActivity()
                 .findViewById(R.id.desc_a)).setText("");
         ((EditText) getActivity()
-                .findViewById(R.id.name_a)).setText("");
+                .findViewById(R.id.director_a)).setText("");
         ((EditText) getActivity()
-                .findViewById(R.id.phone_a)).setText("");
+                .findViewById(R.id.cast_a)).setText("");
         ((EditText) getActivity()
-                .findViewById(R.id.city_a)).setText("");
+                .findViewById(R.id.openingDay_a)).setText("");
     }
 
     private void addClassifieds() {
