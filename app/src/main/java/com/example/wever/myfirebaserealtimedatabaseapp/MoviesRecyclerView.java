@@ -19,65 +19,64 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.List;
 
-
-public class AdsRecyclerView extends RecyclerView.Adapter<AdsRecyclerView.ViewHolder>{
-    private List<ClassifiedAd> adsList;
+public class MoviesRecyclerView extends RecyclerView.Adapter<MoviesRecyclerView.ViewHolder>{
+    private List<Movie> movieList;
     private Context context;
 
-    public AdsRecyclerView(List<ClassifiedAd> list, Context ctx) {
-        adsList = list;
+    public MoviesRecyclerView(List<Movie> list, Context ctx) {
+        movieList = list;
         context = ctx;
     }
     @Override
     public int getItemCount() {
-        return adsList.size();
+        return movieList.size();
     }
 
     @Override
-    public AdsRecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public MoviesRecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.ad_item_layout, parent, false);
+                .inflate(R.layout.movie_item_layout, parent, false);
 
-        AdsRecyclerView.ViewHolder viewHolder =
-                new AdsRecyclerView.ViewHolder(view);
+        MoviesRecyclerView.ViewHolder viewHolder =
+                new MoviesRecyclerView.ViewHolder(view);
         return viewHolder;
     }
 
     @Override
-    public void onBindViewHolder(AdsRecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(MoviesRecyclerView.ViewHolder holder, int position) {
         final int itemPos = position;
-        final ClassifiedAd classifiedAd = adsList.get(position);
-        holder.title.setText(classifiedAd.getTitle());
-        holder.name.setText(classifiedAd.getName());
-        holder.phone.setText(classifiedAd.getPhone());
+        final Movie movie = movieList.get(position);
+        holder.title.setText(movie.getTitle());
+        holder.genre.setText(movie.getGenre());
+        holder.openingDay.setText(movie.getOpeningDay());
 
         holder.edit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                editClassifiedAd(classifiedAd.getAdId());
+                editClassifiedAd(movie.getAdId());
             }
         });
 
         holder.delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                deleteClassifiedAd(classifiedAd.getAdId(), itemPos);
+                deleteClassifiedAd(movie.getAdId(), itemPos);
             }
         });
     }
     public class ViewHolder extends RecyclerView.ViewHolder {
         public TextView title;
-        public TextView name;
-        public TextView phone;
+        public TextView genre;
+        public TextView openingDay;
         public Button edit;
         public Button delete;
 
         public ViewHolder(View view) {
             super(view);
-            name = (TextView) view.findViewById(R.id.title_i);
-            title = (TextView) view.findViewById(R.id.name_i);
-            phone = (TextView) view.findViewById(R.id.phone_i);
+            title = (TextView) view.findViewById(R.id.title_i);
+            genre = (TextView) view.findViewById(R.id.name_i);
+            openingDay = (TextView) view.findViewById(R.id.phone_i);
             edit = view.findViewById(R.id.edit_ad_b);
             delete = view.findViewById(R.id.delete_ad_b);
         }
@@ -90,7 +89,7 @@ public class AdsRecyclerView extends RecyclerView.Adapter<AdsRecyclerView.ViewHo
         Bundle bundle=new Bundle();
         bundle.putString("adId", adId);
 
-        AddClassifiedFragment addFragment = new AddClassifiedFragment();
+        AddMovieFragment addFragment = new AddMovieFragment();
         addFragment.setArguments(bundle); // Bundle -> putString("adId") -> Fragment.setArguments(bundle) -> getArguments.getString(key:"adId")
 
         fm.beginTransaction().replace(R.id.adds_frame, addFragment).commit();
@@ -98,15 +97,15 @@ public class AdsRecyclerView extends RecyclerView.Adapter<AdsRecyclerView.ViewHo
 
     private void deleteClassifiedAd(String adId, final int position){
         FirebaseDatabase.getInstance().getReference()
-                .child("classified").child(adId).removeValue()
+                .child("Movies").child(adId).removeValue()
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
                             //remove item from list alos and refresh recyclerView
-                            adsList.remove(position);
+                            movieList.remove(position);
                             notifyItemRemoved(position);
-                            notifyItemRangeChanged(position, adsList.size());
+                            notifyItemRangeChanged(position, movieList.size());
 
                             Log.d("Delete Ad", "Classified has been deleted");
                             Toast.makeText(context,

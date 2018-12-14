@@ -3,12 +3,12 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/view_movies_m"
-        android:title="View Movies"
+        android:id="@+id/add_movie_m"
+        android:title="Add Movie"
         android:orderInCategory="100" />
     <item
-        android:id="@+id/view_cinema_m"
-        android:title="View Cinema"
+        android:id="@+id/add_cinema_m"
+        android:title="Add Cinema"
         android:orderInCategory="100" />
 
 </menu>

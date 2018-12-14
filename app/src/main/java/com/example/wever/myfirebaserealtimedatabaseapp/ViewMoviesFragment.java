@@ -1,7 +1,5 @@
 package com.example.wever.myfirebaserealtimedatabaseapp;
 
-
-
 import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
@@ -25,23 +23,21 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
-//import android.support.v4.app.Fragment;
-
-public class ViewClassifiedFragment extends Fragment {
-    private static final String TAG = "ViewCinemaFragment";
+public class ViewMoviesFragment extends Fragment {
+    private static final String TAG = "ViewMoviesFragment";
     private DatabaseReference databaseReference;
-    private RecyclerView adsRecyclerView;
+    private RecyclerView movieRecyclerView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.ad_view_layout,
+        View view = inflater.inflate(R.layout.movie_view_layout,
                 container, false);
 
         databaseReference = FirebaseDatabase.getInstance().getReference();
 
-        Button button = (Button) view.findViewById(R.id.view_adds_b);
+        Button button = (Button) view.findViewById(R.id.view_movies_b);
         getDefaultClassifiedsFromDb();
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -50,16 +46,16 @@ public class ViewClassifiedFragment extends Fragment {
             }
         });
 
-        adsRecyclerView = (RecyclerView) view.findViewById(R.id.ads_lst);
+        movieRecyclerView = (RecyclerView) view.findViewById(R.id.movies_lst);
 
         LinearLayoutManager recyclerLayoutManager =
                 new LinearLayoutManager(getActivity().getApplicationContext());
-        adsRecyclerView.setLayoutManager(recyclerLayoutManager);
+        movieRecyclerView.setLayoutManager(recyclerLayoutManager);
 
         DividerItemDecoration dividerItemDecoration =
-                new DividerItemDecoration(adsRecyclerView.getContext(),
+                new DividerItemDecoration(movieRecyclerView.getContext(),
                         recyclerLayoutManager.getOrientation());
-        adsRecyclerView.addItemDecoration(dividerItemDecoration);
+        movieRecyclerView.addItemDecoration(dividerItemDecoration);
 
         return view;
     }
@@ -70,55 +66,55 @@ public class ViewClassifiedFragment extends Fragment {
     }
 
     public void getClassifiedAds() {
-        String category = ((TextView) getActivity()
-                .findViewById(R.id.category_v)).getText().toString();
-        getClassifiedsFromDb(category);
+        String title = ((TextView) getActivity()
+                .findViewById(R.id.title_v)).getText().toString();
+        getClassifiedsFromDb(title);
     }
 
-    private void getClassifiedsFromDb(final String category) {
-        databaseReference.child("Cinema").orderByChild("category")
-                .equalTo(category).addListenerForSingleValueEvent(new ValueEventListener() {
+    private void getClassifiedsFromDb(final String title) {
+        databaseReference.child("Movies").orderByChild("title")
+                .equalTo(title).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                List<ClassifiedAd> adsList = new ArrayList<ClassifiedAd>();
+                List<Movie> movieList = new ArrayList<Movie>();
                 for (DataSnapshot adSnapshot: dataSnapshot.getChildren()) {
-                    adsList.add(adSnapshot.getValue(ClassifiedAd.class));
+                    movieList.add(adSnapshot.getValue(Movie.class));
                 }
-                Log.d(TAG, "no of cinema for search is "+adsList.size());
-                AdsRecyclerView recyclerViewAdapter = new
-                        AdsRecyclerView(adsList, getActivity());
-                adsRecyclerView.setAdapter(recyclerViewAdapter);
+                Log.d(TAG, "no of movies for search is "+movieList.size());
+                MoviesRecyclerView recyclerViewAdapter = new
+                        MoviesRecyclerView(movieList, getActivity());
+                movieRecyclerView.setAdapter(recyclerViewAdapter);
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                Log.d(TAG, "Error trying to get classified cinema for " +category+
+                Log.d(TAG, "Error trying to get classified movies for " +title+
                         " "+databaseError);
                 Toast.makeText(getActivity(),
-                        "Error trying to get classified cinema for " +category,
+                        "Error trying to get classified movies for " +title,
                         Toast.LENGTH_SHORT).show();
             }
         });
     }
 
     private void getDefaultClassifiedsFromDb() {
-        databaseReference.child("Cinema").addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseReference.child("Movies").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                List<ClassifiedAd> adsList = new ArrayList<ClassifiedAd>();
+                List<Movie> movieList = new ArrayList<Movie>();
                 for (DataSnapshot adSnapshot: dataSnapshot.getChildren()) {
-                    adsList.add(adSnapshot.getValue(ClassifiedAd.class));
+                    movieList.add(adSnapshot.getValue(Movie.class));
                 }
-                Log.d(TAG, "no of cinema for search is "+adsList.size());
-                AdsRecyclerView recyclerViewAdapter = new
-                        AdsRecyclerView(adsList, getActivity());
-                adsRecyclerView.setAdapter(recyclerViewAdapter);
+                Log.d(TAG, "no of movies for search is "+movieList.size());
+                MoviesRecyclerView recyclerViewAdapter = new
+                        MoviesRecyclerView(movieList, getActivity());
+                movieRecyclerView.setAdapter(recyclerViewAdapter);
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                Log.d(TAG, "Error trying to get classified cinema for " +
+                Log.d(TAG, "Error trying to get classified movies for " +
                         " "+databaseError);
                 Toast.makeText(getActivity(),
-                        "Error trying to get classified cinema for " ,
+                        "Error trying to get classified movies for " ,
                         Toast.LENGTH_SHORT).show();
             }
         });
